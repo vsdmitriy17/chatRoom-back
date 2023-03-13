@@ -22,6 +22,7 @@ export const roomHendler = (socketIo: Socket) => {
       rooms[roomId].push(peerId);
 
       socketIo.join(roomId); // Присоединяемся к каналу
+      socketIo.to(roomId).emit("user-joined", { peerId });
       socketIo.emit("get-users", { 
         roomId,
         participants: rooms[roomId],
