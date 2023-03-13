@@ -3,6 +3,8 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 
+import { roomHendler } from './room/index';
+
 const PORT = 5000;
 const app = express();
 app.use(cors); // подключаем корсы
@@ -12,12 +14,14 @@ const serverHttp = http.createServer(app); // Сервер Прокси (HTTP с
 const serverSocket = new Server(serverHttp, { // Создаем сервер сокетов
   cors: { // добавляем корсы на сервер сокетов
     origin: "*", // хосты с кот разрешено подключение, "*" - с любых
-      methods: ["GET","POST"], // методы запросов кот. разрешены
+    methods: ["GET","POST"], // методы запросов кот. разрешены
   }
 });
 
 serverSocket.on("connection", (serverIo) => { // вешаем слушателя события "connection" на сервер сокетов
   console.log("WebSocket connection started!");
+
+  roomHendler(serverIo); // слушатель события "create-room" на сервер сокетов
 
   serverIo.on("disconnect", () => { // вешаем слушателя события "disconnect" на сервер сокетов
     console.log("WebSocket connection closed!");
