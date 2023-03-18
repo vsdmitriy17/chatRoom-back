@@ -23,7 +23,7 @@ export const roomHendler = (socketIo: Socket) => {
 
       socketIo.join(roomId); // Присоединяемся к каналу
       socketIo.to(roomId).emit("user-joined", { peerId });
-      socketIo.emit("get-users", { 
+      socketIo.emit("get-users", {
         roomId,
         participants: rooms[roomId],
       });
@@ -41,6 +41,16 @@ export const roomHendler = (socketIo: Socket) => {
     socketIo.to(roomId).emit("user-disconnected", peerId)
   }
 
+  const startSharing = ({ roomId, peerId }: RoomParams) => {
+    socketIo.to(roomId).emit("user-started-sharing", peerId);
+  }
+
+  const stopSharing = (roomId: string) => {
+    socketIo.to(roomId).emit("user-stop-sharing");
+  }
+
   socketIo.on("create-room", createRoom); // вешаем слушателя события "create-room" на сервер сокетов
   socketIo.on("join-room", joinRoom); // вешаем слушателя события "join-room" на сервер сокетов
+  socketIo.on("start-sharing", startSharing); // вешаем слушателя события "start-sharing" на сервер сокетов
+  socketIo.on("stop-sharing", stopSharing); // вешаем слушателя события "stop-sharing" на сервер сокетов
 }
